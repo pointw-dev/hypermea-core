@@ -121,7 +121,7 @@ def embed_remote_parent_resource(resource, request, payload):
         return
     embeddable = json.loads(request.args[embed_key])
     for field in embeddable:
-        if embeddable[field]:
+        if embeddable[field] and field.find('.') < 0:
             definition = current_app.config['DOMAIN'][resource]['schema'][field]
             remote_relation = definition.get('remote_relation', {})
             rel = remote_relation.get('rel')
