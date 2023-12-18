@@ -5,7 +5,7 @@ from version import VERSION
 setup(
     name='hypermea-core',
     version=VERSION,
-    description='The library used by hypermea APIs.',
+    description='The core library used by hypermea APIs.',
     long_description=open('../README.md').read(),
     long_description_content_type='text/markdown',
     license='MIT',
