@@ -1,10 +1,10 @@
 import logging
+from typing import List, Dict, Optional
 import re
 from flask import jsonify, make_response
 from flask import current_app, request
 from bson import ObjectId
 from pymongo import MongoClient
-from pymongo.errors import ServerSelectionTimeoutError, OperationFailure
 from configuration import SETTINGS
 
 LOG = logging.getLogger('utils')
@@ -18,7 +18,7 @@ unauthorized_message = {
 }
 
 
-def get_my_base_url():
+def get_my_base_url() -> str:
     if not SETTINGS.get('HY_GATEWAY_URL') and not SETTINGS.has_enabled('HY_USE_ABSOLUTE_URLS'):
         return ''
 
@@ -34,27 +34,21 @@ def get_my_base_url():
     return base_url
 
 
-def url_join(*parts):
+def url_join(*parts: str) -> str:
     return '/'.join([p.strip().strip('/') for p in parts])
 
 
-def get_id_field(collection_name):
+def get_id_field(collection_name: str) -> str:
     return current_app.config['DOMAIN'][collection_name]['id_field']
 
 
-def get_resource_id(resource, collection_name):
+def get_resource_id(resource: dict, collection_name: str) -> str:
     id_field = get_id_field(collection_name)
     rtn = resource.get(id_field, None)
     if not rtn:
-        record = get_db()[collection_name].find_one({"_id":ObjectId(resource['_id'])})
+        record = get_db()[collection_name].find_one({"_id": ObjectId(resource['_id'])})
         rtn = record[id_field]
     return rtn
-
-
-def is_mongo_running():
-    mongoClient = MongoClient(
-        "mongodb://usernameMongo:passwordMongo@localhost:27017/?authMechanism=DEFAULT&authSource=database_name",
-        serverSelectionTimeoutMS=500)
 
 
 def get_db():
@@ -65,7 +59,10 @@ def get_api():
     return current_app.test_client()
 
 
-def make_error_response(message, code, issues=[], **kwargs):
+def make_error_response(message, code, issues: Optional[List[Dict]] = None, **kwargs):
+    if issues is None:
+        issues = []
+
     if 'exception' in kwargs:
         ex = kwargs.get('exception')
         LOG.exception(message, ex)

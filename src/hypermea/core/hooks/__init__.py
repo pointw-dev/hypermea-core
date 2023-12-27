@@ -3,7 +3,7 @@ import json
 import re
 from hypermea.core.utils import get_my_base_url
 from hypermea.core.logging import trace
-
+from configuration import SETTINGS
 
 @trace
 def tidy_post_links(_, request, payload):
@@ -90,7 +90,7 @@ def _rewrite_schema_links(links):
     base_url = get_my_base_url()
 
     new_links = {
-        'self': {'href': f'{base_url}/', 'title': 'hy-test root'},
+        'self': {'href': f'{base_url}/', 'title': f'{SETTINGS["HY_API_NAME"]} root'},
         'logging': {'href': f'{base_url}/_logging', 'title': 'logging'}
     }
 

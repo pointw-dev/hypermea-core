@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Callable, Optional
 
 LOG = logging.getLogger('settings.manager')
 
@@ -111,7 +112,7 @@ class SettingsManager:
         return prefix in self.settings and setting_name in self.settings[prefix]
 
     # PUBLIC METHODS
-    def create(self, prefix, setting_name, default_value=None, is_optional=False):
+    def create(self, prefix: str, setting_name: str, default_value: str = None, is_optional: bool = False):
         prefix = prefix.upper()
         if prefix not in self.settings:
             self.settings[prefix] = {}
@@ -133,7 +134,7 @@ class SettingsManager:
             else:
                 self.settings[prefix][setting_name] = default_value
 
-    def set_prefix_description(self, prefix, description):
+    def set_prefix_description(self, prefix: str, description: str):
         prefix = prefix.upper()
         if prefix not in self.settings:
             self.settings[prefix] = {}
@@ -141,14 +142,14 @@ class SettingsManager:
             self.prefix_descriptions[prefix] = ''
         self.prefix_descriptions[prefix] = description
 
-    def get(self, setting_name, default_value=None):
+    def get(self, setting_name: str, default_value: str = None):
         self._set_from_environment()
         setting_name = setting_name.upper()
         prefix, setting_name = self._parse_setting_name(setting_name)
 
         return self.settings.get(prefix, {}).get(setting_name, default_value)
 
-    def dump(self, prefix=None, callback=None):
+    def dump(self, prefix=None, callback: Optional[Callable[[str], None]] = None):
         self._set_from_environment()
         if not callback:
             callback = print
@@ -162,7 +163,7 @@ class SettingsManager:
         if self.settings.get('HY_BASE_URL') and self.settings.get('HY_BASE_PATH'):
             LOG.warning('HY_BASE_URL and HY_BASE_PATH cannot both be set.  Ignoring HY_BASE_PATH.')
 
-    def has_enabled(self, setting_name):
+    def has_enabled(self, setting_name: str) -> bool:
         value = self.get(setting_name)
         if not value:
             return False
