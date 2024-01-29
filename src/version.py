@@ -7,7 +7,7 @@ from datetime import date
 
 
 # do not change version manually here, use this script which keeps hypermea-core in sync
-VERSION = '0.9.25'
+VERSION = '0.9.26'
 
 
 def main():

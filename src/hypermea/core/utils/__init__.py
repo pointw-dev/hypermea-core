@@ -59,6 +59,15 @@ def get_api():
     return current_app.test_client()
 
 
+def is_mongo_running():
+    try:
+        get_db().command('ping')
+        return True
+    except Exception as ex:
+        print(ex)
+        return False
+
+
 def make_error_response(message, code, issues: Optional[List[Dict]] = None, **kwargs):
     if issues is None:
         issues = []
