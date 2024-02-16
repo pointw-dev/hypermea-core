@@ -29,7 +29,7 @@ details
 
 * get_db() -> pymongo.database.Database
 * get_api() -> flask.testing.FlaskClient
-* make_error_response(message: str, code: int, issues) -> flask.wrappers.Response
+* make_error_response(message: str, code: int, issues: Optional[List[Dict]] = None) -> flask.wrappers.Response
 * url_join(*parts: str) -> str
 
 additional, but not likely useful

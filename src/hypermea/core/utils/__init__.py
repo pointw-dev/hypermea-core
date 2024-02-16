@@ -59,7 +59,7 @@ def get_api():
     return current_app.test_client()
 
 
-def make_error_response(message, code, issues: Optional[List[Dict]] = None, **kwargs):
+def make_error_response(message: str, code: int, issues: Optional[List[Dict]] = None, **kwargs):
     if issues is None:
         issues = []
 
