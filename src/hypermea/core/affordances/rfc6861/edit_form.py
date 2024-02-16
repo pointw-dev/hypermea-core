@@ -6,7 +6,8 @@ import json
 from flask import make_response, current_app, request
 from bson.objectid import ObjectId
 from hypermea.core.utils import make_error_response, unauthorized_message, get_resource_id, get_id_field, get_my_base_url, get_db
-from ._common import generate_hal_forms_template
+from ._common import generate_hal_form, get_allowed_methods
+from configuration import SETTINGS
 
 LOG = logging.getLogger("affordances.rfc6861.edit-form")
 
@@ -21,6 +22,12 @@ def add_affordance(app):
 
 
 def add_link(resource, collection_name):
+    if SETTINGS.has_enabled('HY_DISABLE_RFC6861'):
+        return
+    allowed_methods = get_allowed_methods(current_app, collection_name)['item_methods']
+    if not any(method in allowed_methods for method in ['PATCH', 'PUT']):
+        return
+
     base_url = get_my_base_url()
     resource_id = get_resource_id(resource, collection_name)
 
@@ -41,7 +48,7 @@ def _do_get_edit_form(collection_name, resource_id):
     search_for = ObjectId(resource_id) if id_field == '_id' else resource_id
     resource = get_db()[collection_name].find_one({id_field: search_for})
 
-    template = generate_hal_forms_template('PUT', schema, self_href, resource)  # TODO: PATCH?  one template for each PUT|PATCH?
+    template = generate_hal_form('edit', schema, self_href, resource)
 
     data = json.dumps(template, indent=4 if 'pretty' in request.args else None)
     response = make_response(data, 200)

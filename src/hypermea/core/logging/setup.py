@@ -8,6 +8,7 @@ import platform
 
 from eve import __version__ as eve_version
 from cerberus import __version__ as cerberus_version
+from hypermea.core import VERSION as hypermea_core_version
 from werkzeug.utils import secure_filename
 
 try:
@@ -111,10 +112,11 @@ def _configure_logger():
     logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
     LOG = logging.getLogger('configuration')
-    LOG.info('%s version:  %s', api_name, VERSION)
-    LOG.info('Eve version:      %s', eve_version)
-    LOG.info('Cerberus version: %s', cerberus_version)
-    LOG.info('Python version:   %s', platform.sys.version)
+    LOG.info('%s version:       %s', api_name, VERSION)
+    LOG.info('Eve version:           %s', eve_version)
+    LOG.info('Cerberus version:      %s', cerberus_version)
+    LOG.info('hypermea-core version: %s', hypermea_core_version)
+    LOG.info('Python version:        %s', platform.sys.version)
 
     if smtp_warnings:
         for warning in smtp_warnings:
@@ -127,10 +129,11 @@ def _configure_logger():
         '''
 
         email_format += f'''
-        {api_name} version:  {VERSION}
-        Eve version:      {eve_version}
-        Cerberus version: {cerberus_version}
-        Python version:   {platform.sys.version}
+        {api_name} version:       {VERSION}
+        Eve version:           {eve_version}
+        Cerberus version:      {cerberus_version}
+        hypermea-core version: {hypermea_core_version}
+        Python version:        {platform.sys.version}
 
         '''
 
