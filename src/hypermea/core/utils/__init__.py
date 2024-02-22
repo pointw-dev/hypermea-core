@@ -3,8 +3,9 @@ from typing import List, Dict, Optional
 import re
 from flask import jsonify, make_response
 from flask import current_app, request
+from eve.utils import document_etag
+from datetime import datetime
 from bson import ObjectId
-from pymongo import MongoClient
 from configuration import SETTINGS
 
 LOG = logging.getLogger('utils')
@@ -35,7 +36,23 @@ def get_my_base_url() -> str:
 
 
 def url_join(*parts: str) -> str:
-    return '/'.join([p.strip().strip('/') for p in parts])
+    url = ""
+    for p in parts:
+        p = p.strip()
+        if p.startswith('?'):
+            # Directly concatenate if part starts with '?'
+            url += p
+        else:
+            # Add a '/' before the part if it's not the first part and the url doesn't already end with '/'
+            if url and not url.endswith('/'):
+                url += '/'
+            url += p.strip('/')
+
+    # Remove trailing '/' if it exists
+    if url.endswith('/'):
+        url = url[:-1]
+
+    return url
 
 
 def get_id_field(collection_name: str) -> str:
@@ -55,8 +72,36 @@ def get_db():
     return current_app.data.driver.db
 
 
+def update_etag_and_updated(record):
+    if not ('_etag' in record and '_updated' in record):
+        return record
+
+    record['_etag'] = document_etag(record)
+    record['_updated'] = datetime.now()
+
+    return record
+
+
 def get_api():
     return current_app.test_client()
+
+
+def is_mongo_running():
+    try:
+        get_db().command('ping')
+        return True
+    except Exception as ex:
+        print(ex)
+        return False
+
+
+def inject_path(base, path, remove_query_string=False):
+    parts = base.split('?', 1)
+    base_part = parts[0]
+    query_string = '?' + parts[1] if len(parts) > 1 else ''
+    if remove_query_string:
+        query_string = ''
+    return url_join(base_part, path, query_string)
 
 
 def make_error_response(message: str, code: int, issues: Optional[List[Dict]] = None, **kwargs):

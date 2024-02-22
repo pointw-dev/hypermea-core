@@ -7,7 +7,7 @@ from datetime import date
 
 
 # do not change version manually here, use this script which keeps hypermea-core in sync
-VERSION = '0.9.25'
+VERSION = '0.9.28'
 
 
 def main():
@@ -30,6 +30,15 @@ def main():
             lines = f.readlines()
 
         with open('version.py', 'w') as f:
+            for line in lines:
+                if line.startswith("VERSION = '"):
+                    line = f"VERSION = '{new_version}'\n"
+                f.write(line)
+
+        with open('./hypermea/core/__init__.py', 'r') as f:
+            lines = f.readlines()
+
+        with open('./hypermea/core/__init__.py', 'w') as f:
             for line in lines:
                 if line.startswith("VERSION = '"):
                     line = f"VERSION = '{new_version}'\n"
