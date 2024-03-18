@@ -27,9 +27,10 @@ The core library consists of the following modules.  These are all wired up in y
 
 details
 
-* get_db() -> pymongo.database.Database
 * get_api() -> flask.testing.FlaskClient
-* make_error_response(message: str, code: int, issues) -> flask.wrappers.Response
+* get_db() -> pymongo.database.Database
+* update_etag_and_updated(record: dict) -> dict
+* make_error_response(message: str, code: int, issues: Optional[List[Dict]] = None) -> flask.wrappers.Response
 * url_join(*parts: str) -> str
 
 additional, but not likely useful

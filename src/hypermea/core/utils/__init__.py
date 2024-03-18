@@ -6,8 +6,9 @@ from typing import List, Dict, Optional
 import re
 from flask import jsonify, make_response
 from flask import current_app, request
+from eve.utils import document_etag
+from datetime import datetime
 from bson import ObjectId
-from pymongo import MongoClient
 from configuration import SETTINGS
 
 LOG = logging.getLogger('utils')
@@ -74,6 +75,16 @@ def get_db():
     return current_app.data.driver.db
 
 
+def update_etag_and_updated(record):
+    if not ('_etag' in record and '_updated' in record):
+        return record
+
+    record['_etag'] = document_etag(record)
+    record['_updated'] = datetime.now()
+
+    return record
+
+
 def get_api():
     return current_app.test_client()
 
@@ -96,7 +107,7 @@ def inject_path(base, path, remove_query_string=False):
     return url_join(base_part, path, query_string)
 
 
-def make_error_response(message, code, issues: Optional[List[Dict]] = None, **kwargs):
+def make_error_response(message: str, code: int, issues: Optional[List[Dict]] = None, **kwargs):
     if issues is None:
         issues = []
 
