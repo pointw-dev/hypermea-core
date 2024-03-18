@@ -1,4 +1,7 @@
 import logging
+from datetime import datetime
+from copy import deepcopy
+import hashlib
 from typing import List, Dict, Optional
 import re
 from flask import jsonify, make_response
@@ -122,6 +125,16 @@ def make_error_response(message, code, issues: Optional[List[Dict]] = None, **kw
         resp['_issues'] = issues
 
     return make_response(jsonify(resp), code)
+
+    
+def update_etag_and_updated(resource):
+    # resource_copy = resource.deepcopy()
+    resource.pop('_etag', None)
+    resource.pop('_updated', None)
+    
+    to_hash = json.dumps(resource, sor_keys=True)
+    resource['_etag'] = hashlib.md5(to_hash('utf-8')).hexdigest()
+    resource['_updated'] = datetime.now()
 
 
 def echo_message():
